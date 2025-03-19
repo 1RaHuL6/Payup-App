@@ -81,7 +81,7 @@
 </head>
 <body>
 
-    <!-- Navbar with Logout Button -->
+    <!-- Navbar -->
     <div class="navbar">
         <div class="brand">PayUp!</div>
         <a href="{% url 'logout' %}">
@@ -89,19 +89,10 @@
         </a>
     </div>
 
-    <!-- Home Page Content -->
+
     <div class="container">
         <h2>Welcome to the Home Page</h2>
         <p>You are logged in as <strong>{{ request.user.username }}</strong>!</p>
-
-        <!-- Display success or error messages -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <p>{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
     </div>
 
 </body>

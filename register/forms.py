@@ -31,3 +31,24 @@ class RegistrationForm(UserCreationForm):
 class LoginForm(AuthenticationForm):
     username = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+class AdminRegistrationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email')
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_superuser = True
+        user.is_staff = True
+        if commit:
+            user.save()
+        return user
+
+class AdminLoginForm(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        if not user.is_superuser:
+            raise forms.ValidationError(
+                "You do not have admin access.",
+                code='invalid_login',
+            )

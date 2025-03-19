@@ -126,7 +126,7 @@
         <div class="brand">PayUp!</div>
         <h2>Register Here</h2>
 
-        <!-- Display any non-field errors -->
+
         {% if form.non_field_errors %}
             <ul class="errorlist">
                 {% for error in form.non_field_errors %}
@@ -138,7 +138,7 @@
         <form method="POST">
             {% csrf_token %}
 
-            <!-- Username field -->
+            <!-- Username -->
             <div class="form-group">
                 <label for="username">Username</label>
                 {{ form.username }}
@@ -151,7 +151,7 @@
                 {% endif %}
             </div>
 
-            <!-- First Name field -->
+
             <div class="form-group">
                 <label for="first_name">First Name</label>
                 {{ form.first_name }}
@@ -164,7 +164,7 @@
                 {% endif %}
             </div>
 
-            <!-- Last Name field -->
+
             <div class="form-group">
                 <label for="last_name">Last Name</label>
                 {{ form.last_name }}
@@ -177,7 +177,7 @@
                 {% endif %}
             </div>
 
-            <!-- Email field -->
+
             <div class="form-group">
                 <label for="email">Email</label>
                 {{ form.email }}
@@ -190,7 +190,7 @@
                 {% endif %}
             </div>
 
-            <!-- Password field -->
+
             <div class="form-group">
                 <label for="password1">Password</label>
                 {{ form.password1 }}
@@ -203,7 +203,7 @@
                 {% endif %}
             </div>
 
-            <!-- Confirm Password field -->
+
             <div class="form-group">
                 <label for="password2">Confirm Password</label>
                 {{ form.password2 }}
@@ -216,7 +216,7 @@
                 {% endif %}
             </div>
 
-            <!-- Currency field -->
+
             <div class="form-group">
                 <label for="currency">Currency</label>
                 {{ form.currency }}

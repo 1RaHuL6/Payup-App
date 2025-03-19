@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PAYUP | Login </title>
+    <title>PAYUP | Login</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -12,11 +12,13 @@
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
+
         .link span {
             display: block;
             margin-bottom: 5px; /* Optional: adds space between the two elements */
-            }
-        /* Error message styling */
+        }
+
+
         .alert {
             background-color: #f8d7da;
             color: #721c24;
@@ -28,7 +30,6 @@
             text-align: center;
         }
 
-
         body {
             background: #1a1a2e;
             color: #fff;
@@ -37,7 +38,9 @@
             align-items: center;
             height: 100vh;
             animation: fadeIn 1.5s ease-in;
+            position: relative; /* Make sure body is relative for absolute positioning */
         }
+
         .container {
             background: #16213e;
             padding: 2rem;
@@ -47,27 +50,33 @@
             transform: scale(0.8);
             animation: popIn 0.6s ease-out forwards;
         }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
         @keyframes popIn {
             from { transform: scale(0.8); }
             to { transform: scale(1); }
         }
+
         h2 {
             text-align: center;
             margin-bottom: 1.5rem;
             font-size: 2rem;
             color: #e94560;
         }
+
         .form-group {
             margin-bottom: 1rem;
         }
+
         label {
             display: block;
             margin-bottom: 0.5rem;
         }
+
         input {
             width: 100%;
             padding: 0.8rem;
@@ -77,6 +86,7 @@
             color: #fff;
             font-size: 1rem;
         }
+
         .btn {
             width: 100%;
             padding: 0.8rem;
@@ -88,22 +98,27 @@
             cursor: pointer;
             transition: background 0.3s, transform 0.2s;
         }
+
         .btn:hover {
             background: #ff2e63;
             transform: translateY(-3px);
         }
+
         .link {
             text-align: center;
             margin-top: 1rem;
         }
+
         .link a {
             color: #e94560;
             text-decoration: none;
             transition: color 0.3s;
         }
+
         .link a:hover {
             color: #ff2e63;
         }
+
         .brand {
             text-align: center;
             font-size: 1.2rem;
@@ -112,13 +127,38 @@
             letter-spacing: 1.5px;
             animation: slideIn 1.2s ease-out;
         }
+
         @keyframes slideIn {
             from { transform: translateY(-50px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
+
+        .admin-login-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #e94560;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .admin-login-btn:hover {
+            background: #ff2e63;
+        }
     </style>
 </head>
+
 <body>
+
+    <p class="admin-login-btn">
+    <a href="{% url 'login_admin' %}" >Admin Login Here</a>
+    </p>
+
     <div class="container">
         <div class="brand">PayUp!</div>
         <h2>Login</h2>
@@ -129,7 +169,7 @@
                     <p>{{ message }}</p>
                 {% endfor %}
             </div>
-        {% endif %}
+            {% endif %}
             {% csrf_token %}
             <div class="form-group">
                 <label for="username">Username</label>
@@ -141,24 +181,18 @@
             </div>
             <button type="submit" class="btn">Login</button>
 
-        {% if user.is_authenticated %}
-                <div class="link">
-                    <a href="{% url 'logout' %}" class="btn">Logout</a>
-                </div>
+            {% if user.is_authenticated %}
+            <div class="link">
+                <a href="{% url 'logout' %}" class="btn">Logout</a>
+            </div>
             {% endif %}
         </form>
+
         <p class="link">
             <span>Don't have an account?</span>
             <br>
             <a href="{% url 'register' %}">Register here</a>
         </p>
-
-        {% if user.is_authenticated %}
-                <div class="link">
-                    <a href="{% url 'logout' %}" class="btn">Logout</a>
-                </div>
-            {% endif %}
-
     </div>
 </body>
 </html>
