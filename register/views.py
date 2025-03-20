@@ -4,18 +4,24 @@ from django.contrib import messages
 from .models import UserDetails
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.decorators import login_required,user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
 from .forms import AdminRegistrationForm,RegistrationForm
+from payapp.views import home
+
 
  # rahul
  #Admin@12345
 
-# Home view
-@login_required
-def home(request):
-    return render(request, 'register/home.html')
+#ray
+#ray@12345
+
+#Rahul16
+#Payup@12345
+
+
 
 # Login view
+
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -71,6 +77,8 @@ def register_view(request):
     return render(request, 'register/register.html', {'form': form})
 
 # Logout view
+
+
 def logout_view(request):
     logout(request)
     messages.success(request, 'You have successfully logged out.')

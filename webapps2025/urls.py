@@ -24,5 +24,6 @@ urlpatterns = [
     path('webapps2025/', include('register.urls')),
     path('webapps2025/pay/', include('payapp.urls')),
     path('webapps2025/conversion/', include('currency_service.urls')),
+    path('payapp/', include('payapp.urls')),
 
 ]

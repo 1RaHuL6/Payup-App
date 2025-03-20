@@ -4,34 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #1a1a2e;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: #16213e;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 {
+            font-size: 2rem;
+            color: #e94560;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin: 1.5rem 0 1rem;
+            color: #fff;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #e94560;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.2s;
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            background: #ff2e63;
+            transform: translateY(-3px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: #0f3460;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #23395d;
+        }
+
+        th {
+            background: #112240;
+            color: #e94560;
+        }
+
+        tr:nth-child(even) {
+            background: #112240;
+        }
+
+        tr:hover {
+            background: #1b2a49;
+        }
+
+        .dashboard-links {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Admin Dashboard</h2>
 
-    <p><a href="{% url 'admin_register' %}">Register New Admin</a></p>
+    <div class="container">
+        <h2>Admin Dashboard</h2>
 
-    <h3>All User Accounts</h3>
-    <table border="1">
-        <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Is Admin?</th>
-            <th>Date Joined</th>
-        </tr>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.first_name }}</td>
-            <td>{{ user.last_name }}</td>
-            <td>{% if user.is_superuser %} ✅ Yes {% else %} ❌ No {% endif %}</td>
-            <td>{{ user.date_joined }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+        <div class="dashboard-links">
+            <a href="{% url 'admin_register' %}" class="btn">➕ Register New Admin</a>
+            <a href="{% url 'logout' %}" class="btn">🚪 Logout</a>
+        </div>
 
-    <p><a href="{% url 'logout' %}">Logout</a></p>
+        <h3>All User Accounts</h3>
+        <table>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Is Admin?</th>
+                <th>Date Joined</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.first_name }}</td>
+                <td>{{ user.last_name }}</td>
+                <td>{% if user.is_superuser %} ✅ Yes {% else %} ❌ No {% endif %}</td>
+                <td>{{ user.date_joined }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
 </body>
 </html>

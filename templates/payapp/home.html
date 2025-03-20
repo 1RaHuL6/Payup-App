@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+       * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #1a1a2e;
+            color: #fff;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .navbar {
+            background: #16213e;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar .brand {
+            color: #e94560;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .nav-text {
+            color: #ff2e63;
+            font-size: 1.2rem;
+        }
+
+        .navbar .logout-btn {
+            background: #e94560;
+            color: white;
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .navbar .logout-btn:hover {
+            background: #ff2e63;
+            transform: translateY(-2px);
+        }
+
+        .users-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+
+        .user-card {
+            background: #16213e;
+            padding: 1.5rem;
+            border-radius: 12px;
+            width: 280px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .user-card h3 {
+            color: #e94560;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-card p {
+            color: #fff;
+            font-size: 1rem;
+            margin: 0.3rem 0;
+        }
+
+        .buttons {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .pay-btn, .request-btn {
+            background: #e94560;
+            color: white;
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .pay-btn:hover, .request-btn:hover {
+            background: #ff2e63;
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            margin-top: 2rem;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 0.8rem;
+            text-align: left;
+            border: 1px solid #fff;
+        }
+
+        table th {
+            background-color: #e94560;
+            color: #fff;
+        }
+
+        table td {
+            background-color: #16213e;
+            color: #fff;
+        }
+
+        .transaction-table {
+            margin-top: 2rem;
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="brand">PayUp!</div>
+        <div class="nav-text">
+            Welcome to the Home Page | You are logged in as <strong>{{ request.user.username }}</strong>
+        </div>
+        <div class="nav-text">
+            <strong>Balance: <span style="color: #39ff14;">{{ user_balance }} {{ user_currency }}</span></strong>
+        </div>
+        <a href="{% url 'logout' %}">
+            <button class="logout-btn">Logout</button>
+        </a>
+    </div>
+
+    <!-- User cards -->
+    <div class="users-container">
+        {% for user_detail in users %}
+        <div class="user-card">
+            <h3>{{ user_detail.user.first_name }} {{ user_detail.user.last_name }}</h3>
+            <p><strong>Currency:</strong> {{ user_detail.currency }}</p>
+            <div class="buttons">
+                <a href="{% url 'make_payment' user_detail.user.id %}">
+                    <button class="pay-btn">PAY</button> </a>
+                <button class="request-btn">REQUEST</button>
+            </div>
+        </div>
+        {% empty %}
+        <p>No users found.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="transaction-table">
+        <h2>Your Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>To</th>
+                    <th>Amount</th>
+                    <th>Currency </th>
+                    <th>Date & Time of payment </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.sender.username }}</td>
+                    <td>{{ transaction.receiver.username }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.currency }}</td>
+                    <td>{{ transaction.timestamp|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">No transactions found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
