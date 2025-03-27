@@ -137,6 +137,42 @@
             border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            .accept-btn {
+    background: #28a745; /* Green */
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.accept-btn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+.reject-btn {
+    background: #dc3545; /* Red */
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.reject-btn:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
         }
 
     </style>
@@ -166,7 +202,8 @@
             <div class="buttons">
                 <a href="{% url 'make_payment' user_detail.user.id %}">
                     <button class="pay-btn">PAY</button> </a>
-                <button class="request-btn">REQUEST</button>
+                <a href="{% url 'request_payment' user_detail.user.id %}">
+                    <button class="request-btn">REQUEST</button> </a>
             </div>
         </div>
         {% empty %}
@@ -204,6 +241,40 @@
             </tbody>
         </table>
     </div>
+
+<h2>Pending Payment Requests</h2>
+<table>
+    <thead>
+        <tr>
+            <th>From</th>
+            <th>Amount</th>
+            <th>Currency</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in received_requests %}
+        <tr>
+            <td>{{ request.sender.first_name }} {{ request.sender.last_name }}</td>
+            <td>{{ request.amount }}</td>
+            <td>{{ request.currency }}</td>
+            <td>
+                <a href="{% url 'handle_payment_request' request.id 'accept' %}">
+                    <button class="accept-btn">Accept</button>
+                </a>
+                <a href="{% url 'handle_payment_request' request.id 'reject' %}">
+                    <button class="reject-btn">Reject</button>
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No pending requests.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 
 </body>
 </html>

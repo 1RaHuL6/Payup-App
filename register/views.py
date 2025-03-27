@@ -4,8 +4,9 @@ from django.contrib import messages
 from .models import UserDetails
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.decorators import user_passes_test, login_required
+from django.contrib.auth.decorators import user_passes_test
 from .forms import AdminRegistrationForm,RegistrationForm
+from payapp.models import Transaction
 from payapp.views import home
 
 
@@ -21,7 +22,6 @@ from payapp.views import home
 
 
 # Login view
-
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -49,7 +49,7 @@ def register_view(request):
             # For Debugging
             print(f"Form is valid. User created: {user.username}, Currency: {currency}")
 
-            # Handle UserDetails creation or update
+
             if not UserDetails.objects.filter(user=user).exists():
                 UserDetails.objects.create(user=user, currency=currency)
                 # For Debugging
@@ -61,12 +61,12 @@ def register_view(request):
                 # For Debugging
                 print(f"UserDetails updated for {user.username}")
 
-            # Log in user
+
             login(request, user)
             # For Debugging
             print(f"User {user.username} logged in successfully.")
 
-            # Redirect to the home page
+
             return redirect('home')
         else:
             # For Debugging
@@ -77,8 +77,6 @@ def register_view(request):
     return render(request, 'register/register.html', {'form': form})
 
 # Logout view
-
-
 def logout_view(request):
     logout(request)
     messages.success(request, 'You have successfully logged out.')
@@ -100,7 +98,7 @@ def register_admin(request):
 
     return render(request, 'register/admin_register.html', {'form': form})
 
-
+# Admin login view
 def admin_login(request):
     if request.method == "POST":
         username = request.POST['username']
@@ -118,11 +116,18 @@ def admin_login(request):
 def is_admin(user):
     return user.is_superuser
 
-@user_passes_test(is_admin)  # Restrict access to superusers
+# Admin dashboard view
+@user_passes_test(is_admin)
 def admin_dashboard(request):
-    users = User.objects.all().order_by('-date_joined')  # Get all users
-    return render(request, 'register/admin_dashboard.html', {'users': users})
+    users = User.objects.all().order_by('-date_joined')
+    transactions = Transaction.objects.all().order_by('-timestamp')
+    user_balances = {user.id: get_user_balance(user) for user in users}
 
+    return render(request, 'register/admin_dashboard.html', {'users': users,
+                                                             'transactions': transactions,
+                                                             'user_balances': user_balances })
+
+# Admin register view
 @user_passes_test(is_admin)  # Only admins can access
 def admin_register_view(request):
     if request.method == 'POST':
@@ -130,10 +135,18 @@ def admin_register_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'New administrator created successfully.')
-            return redirect('admin_dashboard')  # Redirect back to dashboard
+            return redirect('admin_dashboard')
         else:
             messages.error(request, 'Error creating administrator.')
     else:
         form = AdminRegistrationForm()
 
     return render(request, 'register/admin_register.html', {'form': form})
+
+
+def get_user_balance(user):
+    try:
+        user_details = UserDetails.objects.get(user=user)
+        return user_details.balance
+    except UserDetails.DoesNotExist:
+        return None

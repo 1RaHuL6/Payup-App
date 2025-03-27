@@ -7,3 +7,4 @@ class PaymentForm(forms.Form):
         min_value=1,
         widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
+
