@@ -7,17 +7,24 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import user_passes_test
 from .forms import AdminRegistrationForm,RegistrationForm
 from payapp.models import Transaction
+import requests
+from decimal import Decimal
 from payapp.views import home
 
+#admin1
+#admin1
 
- # rahul
- #Admin@12345
 
-#ray
-#ray@12345
+# CR7
+# Cr7@12345
 
-#Rahul16
-#Payup@12345
+# LM10
+# Lm10@12345
+
+#KDB
+#Kevin@12345
+
+
 
 
 
@@ -37,7 +44,11 @@ def login_view(request):
 
     return render(request, 'register/login.html', {'form': form})
 
-# User Register view
+
+
+BASE_CURRENCY = "GBP"  # Default base currency
+INITIAL_BALANCE = 1000  # Default balance
+
 def register_view(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -46,36 +57,43 @@ def register_view(request):
             user = form.save()
             currency = form.cleaned_data['currency']
 
-            # For Debugging
-            print(f"Form is valid. User created: {user.username}, Currency: {currency}")
+            # Calling currency conversion REST API
+            conversion_url = f"http://127.0.0.1:8000/webapps2025/conversion/{BASE_CURRENCY}/{currency}/{INITIAL_BALANCE}/"
+            try:
+                response = requests.get(conversion_url)
 
+                if response.status_code == 200:
+                    json_response = response.json()
 
-            if not UserDetails.objects.filter(user=user).exists():
-                UserDetails.objects.create(user=user, currency=currency)
-                # For Debugging
-                print(f"UserDetails created for {user.username}")
-            else:
-                user_details = UserDetails.objects.get(user=user)
-                user_details.currency = currency
-                user_details.save()
-                # For Debugging
-                print(f"UserDetails updated for {user.username}")
+                    converted_balance = json_response.get('converted_amount', INITIAL_BALANCE)
+
+                    converted_balance = Decimal(str(converted_balance))
+
+                else:
+
+                    converted_balance = INITIAL_BALANCE  # default balance in case of API error
+
+            except requests.RequestException as e:
+                converted_balance = INITIAL_BALANCE  # setting back to default balance amount
+
+            user_details, created = UserDetails.objects.get_or_create(user=user)
+            user_details.currency = currency
+            user_details.balance = converted_balance
+            user_details.save(force_update=True)
+
 
 
             login(request, user)
-            # For Debugging
-            print(f"User {user.username} logged in successfully.")
-
 
             return redirect('home')
+
         else:
-            # For Debugging
-            print("Form is invalid:", form.errors)
+            print("❌ Form is invalid:", form.errors)
+
     else:
         form = RegistrationForm()
 
     return render(request, 'register/register.html', {'form': form})
-
 # Logout view
 def logout_view(request):
     print(f"Logging out user: {request.user.username} (Session ID: {request.session.session_key})")

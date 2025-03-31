@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-# Define supported currency conversion rates
+# Hardcoded conversion rates
 CONVERSION_RATES = {
     ('GBP', 'USD'): 1.29,
     ('USD', 'GBP'): 0.77,
@@ -23,7 +23,7 @@ def conversion(request, currency1, currency2, amount_of_currency1):
         return JsonResponse({'error': 'Invalid currency pair or conversion not supported'}, status=400)
 
     try:
-        amount = float(amount_of_currency1)  # Convert amount to float
+        amount = float(amount_of_currency1)
     except ValueError:
         return JsonResponse({'error': 'Invalid amount. Please provide a numeric value.'}, status=400)
 
