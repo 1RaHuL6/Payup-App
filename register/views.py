@@ -21,7 +21,7 @@ from payapp.views import home
 
 
 
-# Login view
+# User Login view
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -37,7 +37,7 @@ def login_view(request):
 
     return render(request, 'register/login.html', {'form': form})
 
-# Register view
+# User Register view
 def register_view(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
@@ -78,8 +78,12 @@ def register_view(request):
 
 # Logout view
 def logout_view(request):
+    print(f"Logging out user: {request.user.username} (Session ID: {request.session.session_key})")
+
     logout(request)
     messages.success(request, 'You have successfully logged out.')
+
+
     return redirect('login')
 
 # Admin register view

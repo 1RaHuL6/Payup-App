@@ -242,38 +242,40 @@
         </table>
     </div>
 
-<h2>Pending Payment Requests</h2>
+    <!-- Payment request -->
+<h2>Notifications</h2>
 <table>
     <thead>
         <tr>
+            <th>Sr. No.</th>
             <th>From</th>
             <th>Amount</th>
-            <th>Currency</th>
+            <th>Date & Time</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody>
-        {% for request in received_requests %}
+        {% for notification in notifications %}
         <tr>
-            <td>{{ request.sender.first_name }} {{ request.sender.last_name }}</td>
-            <td>{{ request.amount }}</td>
-            <td>{{ request.currency }}</td>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ notification.sender.first_name }} {{ notification.sender.last_name }}</td>
+            <td>{{ notification.payment_request.amount }} {{ notification.payment_request.currency }}</td>
+            <td>{{ notification.timestamp|date:"Y-m-d H:i" }}</td>
             <td>
-                <a href="{% url 'handle_payment_request' request.id 'accept' %}">
-                    <button class="accept-btn">Accept</button>
-                </a>
-                <a href="{% url 'handle_payment_request' request.id 'reject' %}">
-                    <button class="reject-btn">Reject</button>
-                </a>
+                <form action="{% url 'mark_notification_read' notification.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Mark as Read</button>
+                </form>
             </td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="4">No pending requests.</td>
+            <td colspan="5">No notifications found.</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
 
 
 </body>

@@ -1,7 +1,6 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 
-# Define the conversion rates (hardcoded for simplicity)
+# Define supported currency conversion rates
 CONVERSION_RATES = {
     ('GBP', 'USD'): 1.29,
     ('USD', 'GBP'): 0.77,
@@ -14,32 +13,29 @@ CONVERSION_RATES = {
     ('EUR', 'EUR'): 1.0,
 }
 
+def conversion(request, currency1, currency2, amount_of_currency1):
 
-def convert_currency_form(request, currency1, currency2, amount):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Only GET requests are allowed'}, status=405)
+
+
+    if (currency1, currency2) not in CONVERSION_RATES:
+        return JsonResponse({'error': 'Invalid currency pair or conversion not supported'}, status=400)
+
     try:
-        # Convert the amount to a float
-        amount = float(amount)
-
-        # Retrieve the conversion rate
-        rate = CONVERSION_RATES.get((currency1, currency2))
-
-        # Check if the conversion rate is valid
-        if rate is None:
-            return render(request, 'currency_service/conversion.html',
-                          {'error': 'Invalid currency pair or conversion not supported.'})
-
-        # Calculate the converted amount
-        converted_amount = round(amount * rate, 2)
-
-        # Render the template with the results
-        return render(request, 'currency_service/conversion.html', {
-            'converted_amount': converted_amount,
-            'currency1': currency1,
-            'currency2': currency2,
-            'rate': rate,
-            'amount': amount
-        })
-
+        amount = float(amount_of_currency1)  # Convert amount to float
     except ValueError:
-        return render(request, 'currency_service/conversion.html',
-                      {'error': 'Invalid amount. Please provide a numeric value.'})
+        return JsonResponse({'error': 'Invalid amount. Please provide a numeric value.'}, status=400)
+
+
+    rate = CONVERSION_RATES[(currency1, currency2)]
+    converted_amount = round(amount * rate, 2)
+
+    #  response
+    return JsonResponse({
+        'currency1': currency1,
+        'currency2': currency2,
+        'amount': amount,
+        'conversion_rate': rate,
+        'converted_amount': converted_amount
+    })

@@ -4,7 +4,7 @@ from django.contrib import messages
 from register.models import UserDetails
 from django.db import transaction
 from .forms import PaymentForm
-from .models import Transaction, PaymentRequest
+from .models import Transaction, PaymentRequest, Notification
 from django.utils.timezone import now
 
 # Home page view
@@ -27,6 +27,7 @@ def home(request):
 
     #  all payment requests
     payment_requests = PaymentRequest.objects.filter(receiver=request.user)
+    notifications = Notification.objects.filter(receiver=request.user, is_read=False).order_by('-timestamp')
 
     return render(request, 'payapp/home.html', {
         # pass values to template
@@ -35,6 +36,7 @@ def home(request):
         'user_currency': user_details.currency,
         'transactions': transactions,
         'payment_requests': payment_requests,
+        'notifications': notifications,
     })
 
 # payment view
@@ -82,10 +84,11 @@ def make_payment(request, user_id):
 # Request payment view
 @login_required
 def request_payment(request, user_id):
+  with transaction.atomic():
     receiver_details = get_object_or_404(UserDetails, user__id=user_id)  # UserDetails of receiver
     sender_details = get_object_or_404(UserDetails, user=request.user)  # UserDetails of sender
 
-    #check
+
     if PaymentRequest.objects.filter(sender=request.user, receiver=receiver_details.user, status='pending').exists():
         messages.error(request, "Payment request already sent.")
         return redirect('home')
@@ -102,10 +105,26 @@ def request_payment(request, user_id):
             currency=sender_details.currency,
             status='pending',
         )
+
+        Notification.objects.create(
+            receiver=receiver_details.user,
+            sender=sender_details.user,
+            payment_request=payment_request,
+            message=f"You have a new payment request of {sender_details.currency}{amount} from {sender_details.user.first_name}.",
+        )
         messages.success(request, f"Payment request of £{amount} sent to {receiver_details.user.first_name}!")
         return redirect('home')
 
     return render(request, 'payapp/request_payment.html', {'receiver': receiver_details})
+
+
+@login_required
+def mark_notification_read(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id, receiver=request.user)
+    notification.is_read = True
+    notification.save()
+    return redirect('home')
+
 
 # Accept payment view
 @login_required

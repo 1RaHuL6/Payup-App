@@ -1,8 +1,6 @@
 from django.urls import path
-from . import views
+from .views import conversion
 
 urlpatterns = [
-    path('<str:currency1>/<str:currency2>/<str:amount>/', views.convert_currency_form, name='convert_currency'),
-
-
+    path('conversion/<str:currency1>/<str:currency2>/<str:amount_of_currency1>/', conversion, name='currency_conversion'),
 ]
