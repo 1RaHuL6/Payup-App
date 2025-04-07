@@ -11,7 +11,7 @@ class Transaction(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.sender} paid {self.receiver} £{self.amount}"
+        return f"{self.sender.username} paid {self.receiver.username} £{self.amount}"
 
 class PaymentRequest(models.Model):
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sent_payment_requests')
@@ -24,7 +24,7 @@ class PaymentRequest(models.Model):
     is_read = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.sender} requested {self.currency}{self.amount} from {self.receiver}"
+        return f"{self.sender.username} → {self.receiver.username} ({self.amount} {self.currency})"
 
 
 class Notification(models.Model):
@@ -36,4 +36,4 @@ class Notification(models.Model):
     is_read = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Notification for {self.receiver} - {self.message}"
+        return f"Notification for {self.receiver.username} from {self.sender.username}"

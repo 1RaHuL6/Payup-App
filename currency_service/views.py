@@ -7,7 +7,7 @@ CONVERSION_RATES = {
     ('GBP', 'EUR'): 1.19,
     ('EUR', 'GBP'): 0.83,
     ('USD', 'EUR'): 0.91,
-    ('EUR', 'USD'): 1.08,
+    ('EUR', 'USD'): 1.10,
     ('GBP', 'GBP'): 1.0,
     ('USD', 'USD'): 1.0,
     ('EUR', 'EUR'): 1.0,

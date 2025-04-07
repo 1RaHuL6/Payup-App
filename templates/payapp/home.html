@@ -212,37 +212,38 @@
     </div>
 
     <!-- Transactions Table -->
-    <div class="transaction-table">
-        <h2>Your Transactions</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Amount</th>
-                    <th>Currency </th>
-                    <th>Date & Time of payment </th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for transaction in transactions %}
-                <tr>
-                    <td>{{ transaction.sender.username }}</td>
-                    <td>{{ transaction.receiver.username }}</td>
-                    <td>{{ transaction.amount }}</td>
-                    <td>{{ transaction.currency }}</td>
-                    <td>{{ transaction.timestamp|date:"Y-m-d H:i" }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5">No transactions found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div class="transaction-table">
+    <h2>Your Transactions</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>From</th>
+                <th>To</th>
+                <th>Amount received </th>
+                <th>Receiver's Currency</th>
+                <th>Date & Time of payment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.sender.username }}</td>
+                <td>{{ transaction.receiver.username }}</td>
+                <td>{{ transaction.amount }}</td>
+                <td>{{ transaction.currency }}</td>  <!-- Ensure this is stored in DB -->
+                <td>{{ transaction.timestamp|date:"Y-m-d H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No transactions found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-    <!-- Payment request -->
+
+    <!-- Notifications Table -->
 <h2>Notifications</h2>
 <table>
     <thead>
@@ -251,7 +252,7 @@
             <th>From</th>
             <th>Amount</th>
             <th>Date & Time</th>
-            <th>Action</th>
+            <th> Action </th>
         </tr>
     </thead>
     <tbody>
@@ -264,7 +265,7 @@
             <td>
                 <form action="{% url 'mark_notification_read' notification.id %}" method="post">
                     {% csrf_token %}
-                    <button type="submit">Mark as Read</button>
+                    <button type="submit"> Mark as Read </button>
                 </form>
             </td>
         </tr>
@@ -275,6 +276,7 @@
         {% endfor %}
     </tbody>
 </table>
+
 
 
 
