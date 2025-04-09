@@ -47,7 +47,7 @@ def login_view(request):
 
 
 BASE_CURRENCY = "GBP"  # Default base currency
-INITIAL_BALANCE = 1000  # Default balance
+INITIAL_BALANCE = 1000  # Default balance, Welcome bonus!
 
 def register_view(request):
     if request.method == 'POST':

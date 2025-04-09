@@ -178,6 +178,14 @@
     </style>
 </head>
 <body>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 
     <!-- Navbar -->
     <div class="navbar">
@@ -243,39 +251,51 @@
 </div>
 
 
-    <!-- Notifications Table -->
-<h2>Notifications</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Sr. No.</th>
-            <th>From</th>
-            <th>Amount</th>
-            <th>Date & Time</th>
-            <th> Action </th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for notification in notifications %}
-        <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ notification.sender.first_name }} {{ notification.sender.last_name }}</td>
-            <td>{{ notification.payment_request.amount }} {{ notification.payment_request.currency }}</td>
-            <td>{{ notification.timestamp|date:"Y-m-d H:i" }}</td>
-            <td>
-                <form action="{% url 'mark_notification_read' notification.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit"> Mark as Read </button>
-                </form>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5">No notifications found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<!-- Pending Requests Table -->
+<div class="transaction-table">
+    <h2>Pending Requests</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Sr No.</th>
+                <th>Sender</th>
+                <th>Amount</th>
+                <th>Currency</th>
+                <th>Date & Time</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in pending_requests %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ request.sender.username }}</td>
+                <td>{{ request.amount }}</td>
+                <td>{{ request.currency }}</td>
+                <td>{{ request.timestamp|date:"Y-m-d H:i" }}</td>
+                <td class="buttons">
+                    <form method="post" action="{% url 'accept_request' request.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="accept-btn">Accept</button>
+                    </form>
+                    <form method="post" action="{% url 'reject_request' request.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="reject-btn">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No pending requests found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+
 
 
 

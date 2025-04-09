@@ -97,9 +97,10 @@
 </head>
 <body>
     <div class="container">
-        <h2>Request Payment to {{ receiver.first_name }} {{ receiver.last_name }}</h2>
+        <h2> Make a Payment request </h2>
+        <p>Receiver's Currency: <strong>{{ receiver.currency }}</strong></p>
 
-        <form method="POST">
+        <form method="POST" action="">
             {% csrf_token %}
             <div class="form-group">
                 <label for="amount">Amount to Request</label>
@@ -107,6 +108,9 @@
             </div>
             <button type="submit" class="btn">Send Payment Request</button>
         </form>
+
+
+
 
         <br>
         <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
