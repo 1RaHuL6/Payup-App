@@ -1,0 +1,34 @@
+# Python
+# -------------------------------------------------------------------
+__pycache__/
+*.pyc
+
+# Virtual Environments
+venv/
+.venv/
+env/
+
+# Auto-generated code (e.g., from Thrift)
+gen-py/
+
+# Dependencies and executables
+thrift-0.19.0.exe
+
+# Database files
+*.sqlite3
+webapps.db
+
+# IDE and editor folders
+.idea/
+.vscode/
+
+
+# Django
+# -------------------------------------------------------------------
+*.log
+local_settings.py
+staticfiles/
+
+
+# Secrets File - VERY IMPORTANT
+.env
