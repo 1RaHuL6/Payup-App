@@ -93,7 +93,7 @@ def register_view(request):
     else:
         form = RegistrationForm()
 
-    return render(request, 'register/register.html', {'form': form})
+    return render(request, 'register/Register.html', {'form': form})
 # Logout view
 def logout_view(request):
     print(f"Logging out user: {request.user.username} (Session ID: {request.session.session_key})")
