@@ -35,6 +35,15 @@ DEBUG = os.environ.get('DEBUG') == '1' # '1' for True, '0' for False
 # DEBUG = True
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
+CSRF_TRUSTED_ORIGINS = []
+AZURE_HOSTNAME = os.environ.get('WEBSITE_HOSTNAME')
+if AZURE_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{AZURE_HOSTNAME}')
+    
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Add Azure's expected hostname to the list if it exists
 AZURE_HOSTNAME = os.environ.get('WEBSITE_HOSTNAME')
