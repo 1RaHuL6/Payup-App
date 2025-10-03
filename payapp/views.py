@@ -8,6 +8,7 @@ from .models import Transaction, PaymentRequest
 from decimal import Decimal
 import requests
 from .thrift_client import get_timestamp_from_thrift
+from currency_service.conversion_logic import calculate_conversion
 
 
 
@@ -49,12 +50,10 @@ def home(request):
         'pending_requests': pending_requests,
     })
 
-
-# payment view
 @login_required
 def make_payment(request, user_id):
-    receiver_details = get_object_or_404(UserDetails, user__id=user_id)  #  UserDetails of receiver
-    sender_details = get_object_or_404(UserDetails, user=request.user)  #UserDetails of sender
+    receiver_details = get_object_or_404(UserDetails, user__id=user_id)
+    sender_details = get_object_or_404(UserDetails, user=request.user)
 
     if request.method == "POST":
         form = PaymentForm(request.POST)
@@ -66,23 +65,23 @@ def make_payment(request, user_id):
             else:
                 try:
                     with transaction.atomic():
-                        #get converted amount
-                        conversion_url = f"http://127.0.0.1:8000/webapps2025/conversion/{sender_details.currency}/{receiver_details.currency}/{amount}/"
-                        response = requests.get(conversion_url)
 
-                        if response.status_code == 200:
-                            json_response = response.json()
-                            converted_amount = Decimal(str(json_response.get('converted_amount', amount)))
-
-
-                        else:
-                            messages.error(request, f"Currency conversion failed: {response.text}")
+                        
+                        try:
+                            conversion_data = calculate_conversion(
+                                sender_details.currency,
+                                receiver_details.currency,
+                                amount
+                            )
+                            converted_amount = Decimal(str(conversion_data['converted_amount']))
+                        except ValueError as e:
+                            messages.error(request, f"Currency conversion failed: {e}")
                             return redirect('home')
+                        
 
                         sender_details.balance -= amount
                         sender_details.save()
 
-                       #use converted amount to add balance
                         receiver_details.balance += converted_amount
                         receiver_details.save()
 
@@ -96,18 +95,75 @@ def make_payment(request, user_id):
                             timestamp=timestamp
                         )
 
-
-                    messages.success(request, f"Payment of £{amount} sent to {receiver_details.user.first_name}!")
-                    return redirect('home')
+                        
+                        messages.success(request, f"Payment of {sender_details.currency} {amount} sent to {receiver_details.user.first_name}!")
+                        return redirect('home')
 
                 except Exception as e:
-
-                    messages.error(request, f"An error occurred: {e}")
-
+                    messages.error(request, f"An error occurred during the transaction: {e}")
+                    return redirect('home') 
     else:
         form = PaymentForm()
 
     return render(request, 'payapp/make_payment.html', {'form': form, 'receiver': receiver_details})
+# payment view
+# @login_required
+# def make_payment(request, user_id):
+#     receiver_details = get_object_or_404(UserDetails, user__id=user_id)  #  UserDetails of receiver
+#     sender_details = get_object_or_404(UserDetails, user=request.user)  #UserDetails of sender
+
+#     if request.method == "POST":
+#         form = PaymentForm(request.POST)
+#         if form.is_valid():
+#             amount = form.cleaned_data['amount']
+
+#             if sender_details.balance < amount:
+#                 messages.error(request, "Insufficient balance!")
+#             else:
+#                 try:
+#                     with transaction.atomic():
+#                         #get converted amount
+#                         conversion_url = f"http://127.0.0.1:8000/webapps2025/conversion/{sender_details.currency}/{receiver_details.currency}/{amount}/"
+#                         response = requests.get(conversion_url)
+
+#                         if response.status_code == 200:
+#                             json_response = response.json()
+#                             converted_amount = Decimal(str(json_response.get('converted_amount', amount)))
+
+
+#                         else:
+#                             messages.error(request, f"Currency conversion failed: {response.text}")
+#                             return redirect('home')
+
+#                         sender_details.balance -= amount
+#                         sender_details.save()
+
+#                        #use converted amount to add balance
+#                         receiver_details.balance += converted_amount
+#                         receiver_details.save()
+
+#                         timestamp = get_timestamp_from_thrift()
+
+#                         Transaction.objects.create(
+#                             sender=sender_details.user,
+#                             receiver=receiver_details.user,
+#                             amount=converted_amount,
+#                             currency=receiver_details.currency,
+#                             timestamp=timestamp
+#                         )
+
+
+#                     messages.success(request, f"Payment of £{amount} sent to {receiver_details.user.first_name}!")
+#                     return redirect('home')
+
+#                 except Exception as e:
+
+#                     messages.error(request, f"An error occurred: {e}")
+
+#     else:
+#         form = PaymentForm()
+
+#     return render(request, 'payapp/make_payment.html', {'form': form, 'receiver': receiver_details})
 
 # Request payment view
 @login_required
