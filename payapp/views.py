@@ -7,8 +7,9 @@ from .forms import PaymentForm
 from .models import Transaction, PaymentRequest
 from decimal import Decimal
 import requests
-from .thrift_client import get_timestamp_from_thrift
 from currency_service.conversion_logic import calculate_conversion
+import time
+# from .thrift_client import get_timestamp_from_thrift
 
 
 
@@ -85,7 +86,8 @@ def make_payment(request, user_id):
                         receiver_details.balance += converted_amount
                         receiver_details.save()
 
-                        timestamp = get_timestamp_from_thrift()
+                        # timestamp = get_timestamp_from_thrift()  # using thrift service
+                        timestamp = int(time.time())               # using python call
 
                         Transaction.objects.create(
                             sender=sender_details.user,

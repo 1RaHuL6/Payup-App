@@ -32,3 +32,9 @@ staticfiles/
 
 # Secrets File - VERY IMPORTANT
 .env
+
+# --- Disabled Thrift Service Files  ---
+Dockerfile
+thrift_requirements.txt
+timestampthrift.py
+timestamp.thrift
