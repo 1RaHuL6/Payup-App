@@ -10,6 +10,7 @@ from payapp.models import Transaction
 import requests
 from decimal import Decimal
 from payapp.views import home
+from currency_service.conversion_logic import calculate_conversion
 
 #admin1
 #admin1
@@ -49,51 +50,92 @@ def login_view(request):
 BASE_CURRENCY = "GBP"  # Default base currency
 INITIAL_BALANCE = 1000  # Default balance, Welcome bonus!
 
+# def register_view(request):
+#     if request.method == 'POST':
+#         form = RegistrationForm(request.POST)
+
+#         if form.is_valid():
+#             user = form.save()
+#             currency = form.cleaned_data['currency']
+
+#             # Calling currency conversion REST API
+#             conversion_url = f"http://127.0.0.1:8000/webapps2025/conversion/{BASE_CURRENCY}/{currency}/{INITIAL_BALANCE}/"
+#             try:
+#                 response = requests.get(conversion_url)
+
+#                 if response.status_code == 200:
+#                     json_response = response.json()
+
+#                     converted_balance = json_response.get('converted_amount', INITIAL_BALANCE)
+
+#                     converted_balance = Decimal(str(converted_balance))
+
+#                 else:
+
+#                     converted_balance = INITIAL_BALANCE  # default balance in case of API error
+
+#             except requests.RequestException as e:
+#                 converted_balance = INITIAL_BALANCE  # setting back to default balance amount
+
+#             user_details, created = UserDetails.objects.get_or_create(user=user)
+#             user_details.currency = currency
+#             user_details.balance = converted_balance
+#             user_details.save(force_update=True)
+
+
+
+#             login(request, user)
+
+#             return redirect('home')
+
+#         else:
+#             print(" Form is invalid:", form.errors)
+
+#     else:
+#         form = RegistrationForm()
+
+#     return render(request, 'register/Register.html', {'form': form})
+
+
+# register view
 def register_view(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
-
         if form.is_valid():
             user = form.save()
             currency = form.cleaned_data['currency']
 
-            # Calling currency conversion REST API
-            conversion_url = f"http://127.0.0.1:8000/webapps2025/conversion/{BASE_CURRENCY}/{currency}/{INITIAL_BALANCE}/"
+            
             try:
-                response = requests.get(conversion_url)
+                
+                conversion_data = calculate_conversion(BASE_CURRENCY, currency, INITIAL_BALANCE)
+                converted_balance = Decimal(str(conversion_data['converted_amount']))
+            except ValueError as e:
+                
+                print(f"Currency conversion failed during registration: {e}")
+                messages.warning(request, "Could not perform currency conversion, setting default balance.")
+                converted_balance = Decimal(str(INITIAL_BALANCE))
+            
 
-                if response.status_code == 200:
-                    json_response = response.json()
-
-                    converted_balance = json_response.get('converted_amount', INITIAL_BALANCE)
-
-                    converted_balance = Decimal(str(converted_balance))
-
-                else:
-
-                    converted_balance = INITIAL_BALANCE  # default balance in case of API error
-
-            except requests.RequestException as e:
-                converted_balance = INITIAL_BALANCE  # setting back to default balance amount
-
+            
             user_details, created = UserDetails.objects.get_or_create(user=user)
             user_details.currency = currency
             user_details.balance = converted_balance
-            user_details.save(force_update=True)
-
-
+            user_details.save()
 
             login(request, user)
-
+            messages.success(request, "Registration successful! You are now logged in.")
             return redirect('home')
-
-        else:
-            print("❌ Form is invalid:", form.errors)
-
+        
+        else:   
+            messages.error(request, "Please correct the errors below.")
+            print(" Form is invalid:", form.errors)
     else:
         form = RegistrationForm()
 
     return render(request, 'register/Register.html', {'form': form})
+
+
 # Logout view
 def logout_view(request):
     print(f"Logging out user: {request.user.username} (Session ID: {request.session.session_key})")
